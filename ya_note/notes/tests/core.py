@@ -7,10 +7,9 @@ from django.urls import reverse
 from notes.models import Note
 
 USER_MODEL = get_user_model()
-AUTHOR = 'Автор'
+AUTHOR = 'Автор публикации'
 AUTH_USER = 'Авторизированный пользователь'
 SLUG = 'note-slug'
-
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
         'home',
@@ -25,7 +24,6 @@ URL_NAME_IN_VIEWS = namedtuple(
         'delete',
     )
 )
-
 URL = URL_NAME_IN_VIEWS(
     reverse('notes:home'),
     reverse('users:login'),
