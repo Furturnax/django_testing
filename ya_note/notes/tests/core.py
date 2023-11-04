@@ -10,6 +10,7 @@ USER_MODEL = get_user_model()
 AUTHOR = 'Автор публикации'
 AUTH_USER = 'Авторизированный пользователь'
 SLUG = 'note-slug'
+
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
         'home',
@@ -39,7 +40,7 @@ URL = URL_NAME_IN_VIEWS(
 
 
 class CoreTestCase(TestCase):
-    """Создание объектов для тестов."""
+    """Создание разовых объектов для тестов."""
 
     @classmethod
     def setUpTestData(cls):

@@ -23,12 +23,12 @@ class TestRoutes(CoreTestCase):
             (URL.edit, self.user_client, HTTPStatus.NOT_FOUND),
             (URL.delete, self.user_client, HTTPStatus.NOT_FOUND),
         )
-        for url, client, expected_status in urls:
-            with self.subTest(url=url):
+        for url, client, status in urls:
+            with self.subTest(url=url, client=client, status=status):
                 self.assertEqual(
                     client.get(url).status_code,
-                    expected_status,
-                    msg=(f'Код ответа страницы {url} не'
+                    status,
+                    msg=(f'Проверьте, что код ответа страницы {url} не '
                          'соответствует ожидаемому.'),
                 )
 
@@ -43,11 +43,10 @@ class TestRoutes(CoreTestCase):
             (URL.delete, self.client),
         )
         for url, client in urls:
-            with self.subTest(url=url):
-                redirect_url = f'{URL.login}?next={url}'
+            with self.subTest(url=url, client=client):
                 self.assertRedirects(
                     client.get(url),
-                    redirect_url,
-                    msg_prefix=('Проверьте, что неавторизованный пользователь'
-                                f'не имеет доступа к странице {url}.')
+                    f'{URL.login}?next={url}',
+                    msg_prefix=('Проверьте, что неавторизованный пользователь '
+                                f'не имеет доступа к странице {url}.'),
                 )
