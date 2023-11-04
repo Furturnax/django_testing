@@ -13,11 +13,17 @@ AUTH_USER = 'Авторизированный пользователь'
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
         'home',
+        'login',
+        'logout',
+        'signup',
     )
 )
 
 URL = URL_NAME_IN_VIEWS(
     reverse('notes:home'),
+    reverse('users:login'),
+    reverse('users:logout'),
+    reverse('users:signup'),
 )
 
 

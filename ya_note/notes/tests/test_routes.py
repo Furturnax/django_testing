@@ -9,6 +9,9 @@ class TestRoutes(CoreTestCase):
         """Тест доступности страниц для всех."""
         urls = (
             (URL.home, self.client, HTTPStatus.OK),
+            (URL.login, self.client, HTTPStatus.OK),
+            (URL.logout, self.client, HTTPStatus.OK),
+            (URL.signup, self.client, HTTPStatus.OK),
         )
         for url, client, expected_status in urls:
             with self.subTest(url=url):
