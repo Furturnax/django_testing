@@ -15,6 +15,12 @@ class TestRoutes(CoreTestCase):
             (URL.add, self.user_client, HTTPStatus.OK),
             (URL.success, self.user_client, HTTPStatus.OK),
             (URL.list, self.user_client, HTTPStatus.OK),
+            (URL.detail, self.author_client, HTTPStatus.OK),
+            (URL.edit, self.author_client, HTTPStatus.OK),
+            (URL.delete, self.author_client, HTTPStatus.OK),
+            (URL.detail, self.user_client, HTTPStatus.NOT_FOUND),
+            (URL.edit, self.user_client, HTTPStatus.NOT_FOUND),
+            (URL.delete, self.user_client, HTTPStatus.NOT_FOUND),
         )
         for url, client, expected_status in urls:
             with self.subTest(url=url):

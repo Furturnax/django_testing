@@ -9,6 +9,7 @@ from notes.models import Note
 USER_MODEL = get_user_model()
 AUTHOR = 'Автор'
 AUTH_USER = 'Авторизированный пользователь'
+SLUG = 'note-slug'
 
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
@@ -19,6 +20,9 @@ URL_NAME_IN_VIEWS = namedtuple(
         'add',
         'success',
         'list',
+        'detail',
+        'edit',
+        'delete',
     )
 )
 
@@ -30,6 +34,9 @@ URL = URL_NAME_IN_VIEWS(
     reverse('notes:add'),
     reverse('notes:success'),
     reverse('notes:list'),
+    reverse('notes:detail', args=(SLUG,)),
+    reverse('notes:edit', args=(SLUG,)),
+    reverse('notes:delete', args=(SLUG,)),
 )
 
 
@@ -47,6 +54,6 @@ class CoreTestCase(TestCase):
         cls.note = Note.objects.create(
             title='Заголовок',
             text='Текст заметки',
-            slug='note-slug',
+            slug=SLUG,
             author=cls.author
         )
