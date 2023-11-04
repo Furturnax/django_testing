@@ -12,6 +12,9 @@ class TestRoutes(CoreTestCase):
             (URL.login, self.client, HTTPStatus.OK),
             (URL.logout, self.client, HTTPStatus.OK),
             (URL.signup, self.client, HTTPStatus.OK),
+            (URL.add, self.user_client, HTTPStatus.OK),
+            (URL.success, self.user_client, HTTPStatus.OK),
+            (URL.list, self.user_client, HTTPStatus.OK),
         )
         for url, client, expected_status in urls:
             with self.subTest(url=url):
