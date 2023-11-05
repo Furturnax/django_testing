@@ -5,11 +5,16 @@ from collections import namedtuple
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
+from pytest_lazyfixture import lazy_fixture
 
 from news.models import News, Comment
 
 AUTHOR = 'Автор публикации'
 PK = 1
+CLIENT_USER = lazy_fixture('client')
+AUTHOR_USER = lazy_fixture('author_client')
+ADMIN_USER = lazy_fixture('admin_client')
+
 
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
@@ -23,19 +28,19 @@ URL_NAME_IN_VIEWS = namedtuple(
     )
 )
 URL = URL_NAME_IN_VIEWS(
-    reverse('notes:home'),
+    reverse('news:home'),
     reverse('users:login'),
     reverse('users:logout'),
     reverse('users:signup'),
-    reverse('notes:detail', args=(PK,)),
-    reverse('notes:edit', args=(PK,)),
-    reverse('notes:delete', args=(PK,)),
+    reverse('news:detail', args=(PK,)),
+    reverse('news:edit', args=(PK,)),
+    reverse('news:delete', args=(PK,)),
 )
 
 
 @pytest.fixture
 def author(django_user_model):
-    return django_user_model.objects.create(username='AUTHOR')
+    return django_user_model.objects.create(username=AUTHOR)
 
 
 @pytest.fixture
@@ -67,7 +72,7 @@ def pk_for_args(news):
 
 
 @pytest.fixture
-def new_list():
+def news_list():
     return News.objects.bulk_create(
         News(
             title=f'Заголовок {index}',
