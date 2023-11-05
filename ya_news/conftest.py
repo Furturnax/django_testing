@@ -9,11 +9,10 @@ from pytest_lazyfixture import lazy_fixture
 
 from news.models import News, Comment
 
-AUTHOR = 'Автор публикации'
 PK = 1
-CLIENT_USER = lazy_fixture('client')
-AUTHOR_USER = lazy_fixture('author_client')
-ADMIN_USER = lazy_fixture('admin_client')
+ANONYM = lazy_fixture('client')
+AUTHOR = lazy_fixture('author_client')
+AUTH_USER = lazy_fixture('admin_client')
 
 
 URL_NAME_IN_VIEWS = namedtuple(
@@ -40,7 +39,7 @@ URL = URL_NAME_IN_VIEWS(
 
 @pytest.fixture
 def author(django_user_model):
-    return django_user_model.objects.create(username=AUTHOR)
+    return django_user_model.objects.create(username='Автор')
 
 
 @pytest.fixture
@@ -53,7 +52,7 @@ def author_client(author, client):
 def news():
     return News.objects.create(
         title='Заголовок',
-        text='Текст',
+        text='Текст новости',
     )
 
 
@@ -84,16 +83,16 @@ def news_list():
 
 
 @pytest.fixture
-def comment_list(author, news):
+def comments_list(author, news):
     for index in range(2):
         comment = Comment.objects.create(
             news=news,
             author=author,
             text='Комментарий',
         )
-        comment.created = now + timedelta(days=index)
+        comment.created = now() + timedelta(days=index)
         comment.save()
-    return comment_list
+    return comments_list
 
 
 @pytest.fixture
