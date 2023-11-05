@@ -13,6 +13,8 @@ PK = 1
 ANONYM = lazy_fixture('client')
 AUTHOR = lazy_fixture('author_client')
 AUTH_USER = lazy_fixture('admin_client')
+COMMENT_TEXT = 'Текст комментария'
+NEW_COMMENT_TEXT = 'Новый комментарий'
 
 
 URL_NAME_IN_VIEWS = namedtuple(
@@ -61,13 +63,13 @@ def comment(author, news):
     return Comment.objects.create(
         news=news,
         author=author,
-        text='Комментарий',
+        text='Текст комментария',
     )
 
 
 @pytest.fixture
 def pk_for_args(news):
-    return news.pk,
+    return (news.pk,)
 
 
 @pytest.fixture
