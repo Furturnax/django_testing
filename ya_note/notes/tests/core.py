@@ -8,13 +8,12 @@ from notes.models import Note
 
 USER_MODEL = get_user_model()
 AUTHOR = 'Автор публикации'
-AUTH_USER = 'Авторизированный пользователь'
+AUTH_USER = 'Авторизованный пользователь'
 SLUG = 'note-slug'
 NEW_SLUG = 'new-slug'
 FIELD_FORM = ('title', 'text', 'slug', 'author')
 FORM_DATA = ('Заголовок', 'Текст заметки', SLUG)
 NEW_FORM_DATA = ('Новый заголовок', 'Новый текст заметки', NEW_SLUG)
-
 URL_NAME_IN_VIEWS = namedtuple(
     'NAME', (
         'home',
@@ -60,7 +59,7 @@ class CoreTestCase(TestCase):
 
 
 class CoreCheckData(TestCase):
-    """Создание объектов в БД для проверки."""
+    """Создание и сопоставление объектов в БД."""
 
     @classmethod
     def setUpTestData(cls):
@@ -70,7 +69,7 @@ class CoreCheckData(TestCase):
         cls.form_data = dict(zip(FIELD_FORM, FORM_DATA))
         cls.field_data = (*FORM_DATA, cls.author)
 
-    def check_data(self, field_data):
+    def check_data_from_form_and_db(self, field_data):
         """Сравнение данных отправленных в форме с данными в БД."""
         note = Note.objects.get()
         data_from_db = (note.title, note.text, note.slug, note.author)
@@ -81,18 +80,18 @@ class CoreCheckData(TestCase):
                     db_value,
                     msg=(
                         'Проверьте, что в базу данных добавлена запись, '
-                        'которая совпадает с той, что отправленна из формы.'
+                        'которая совпадает с той, что отправлена из формы.'
                     ),
                 )
 
-    def equal(self, expected_count):
-        """Сравнение количества заметок в БД после любого действия."""
+    def comparison_count_notes_in_db(self, expected_count):
+        """Сопоставление количества заметок в БД после любого действия."""
         notes_count = Note.objects.count()
         self.assertEqual(
             expected_count,
             notes_count,
             msg=(
-                'Проверьте, что количество записей в БД соотвествует '
+                'Проверьте, что количество записей в БД соответствует '
                 'ожидаемому.'
             ),
         )

@@ -21,7 +21,7 @@ class TestNotesList(CoreTestCase):
                 )
 
     def test_get_forms_on_add_or_edit_pages_from_author(self):
-        """Тест передачи формы для созданяи и редактирования заметок."""
+        """Тест передачи формы для создания и редактирования заметок."""
         urls = (
             (URL.add, self.author_client),
             (URL.edit, self.author_client),
