@@ -3,7 +3,7 @@ import pytest
 from http import HTTPStatus
 from pytest_django.asserts import assertRedirects
 
-from conftest import AUTH_USER, AUTHOR, ANONYM, URL
+from conftest import ANONYM, AUTH_USER, AUTHOR, URL
 
 pytestmark = pytest.mark.django_db
 

@@ -1,6 +1,8 @@
 import pytest
-from datetime import datetime, timedelta
+
 from collections import namedtuple
+from datetime import datetime, timedelta
+from http import HTTPStatus
 
 from django.conf import settings
 from django.urls import reverse
@@ -100,3 +102,19 @@ def comments_list(author, news):
 @pytest.fixture
 def form_data():
     return {'text': 'Новый комментарий'}
+
+
+def comparison_count_comments_in_db(expected_count):
+    """Сопоставление количества комментариев в БД после любого действия."""
+    comments_count = Comment.objects.count()
+    assert expected_count == comments_count, (
+        'Проверьте, что авторизированный пользователь смог написать '
+        'комментарий.'
+    )
+
+
+def return_status_404(response):
+    """Возвращает статус ответа 404."""
+    assert response.status_code == HTTPStatus.NOT_FOUND, (
+        'Проверьте, что статус ответа 404.'
+    )
