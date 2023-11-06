@@ -28,7 +28,7 @@ class TestRoutes(CoreTestCase):
                 self.assertEqual(
                     client.get(url).status_code,
                     status,
-                    msg=(f'Проверьте, что код ответа страницы {url} не '
+                    msg=(f'Проверьте, код ответа страницы "{url}" '
                          'соответствует ожидаемому.'),
                 )
 
@@ -48,5 +48,5 @@ class TestRoutes(CoreTestCase):
                     client.get(url),
                     f'{URL.login}?next={url}',
                     msg_prefix=('Проверьте, что неавторизованный пользователь '
-                                f'не имеет доступа к странице {url}.'),
+                                f'не имеет доступа к странице "{url}".'),
                 )
