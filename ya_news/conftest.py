@@ -1,9 +1,8 @@
-import pytest
-
 from collections import namedtuple
 from datetime import datetime, timedelta
 from http import HTTPStatus
 
+import pytest
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
@@ -11,12 +10,14 @@ from pytest_lazyfixture import lazy_fixture
 
 from news.models import News, Comment
 
-PK = 1
 ANONYM = lazy_fixture('client')
 AUTHOR = lazy_fixture('author_client')
 AUTH_USER = lazy_fixture('admin_client')
+NEWS_TITLE = 'Заголовок'
+NEWS_TEXT = 'Текст новости'
+NEWS_PK = 1
 COMMENT_TEXT = 'Текст комментария'
-NEW_COMMENT_TEXT = 'Новый комментарий'
+COMMENT_TEXT_NEW = 'Новый комментарий'
 
 
 URL_NAME_IN_VIEWS = namedtuple(
@@ -35,9 +36,9 @@ URL = URL_NAME_IN_VIEWS(
     reverse('users:login'),
     reverse('users:logout'),
     reverse('users:signup'),
-    reverse('news:detail', args=(PK,)),
-    reverse('news:edit', args=(PK,)),
-    reverse('news:delete', args=(PK,)),
+    reverse('news:detail', args=(NEWS_PK,)),
+    reverse('news:edit', args=(NEWS_PK,)),
+    reverse('news:delete', args=(NEWS_PK,)),
 )
 
 
@@ -55,8 +56,8 @@ def author_client(author, client):
 @pytest.fixture
 def news():
     return News.objects.create(
-        title='Заголовок',
-        text='Текст новости',
+        title=NEWS_TITLE,
+        text=NEWS_TEXT,
     )
 
 
@@ -65,13 +66,8 @@ def comment(author, news):
     return Comment.objects.create(
         news=news,
         author=author,
-        text='Текст комментария',
+        text=COMMENT_TEXT,
     )
-
-
-@pytest.fixture
-def pk_for_args(news):
-    return (news.pk,)
 
 
 @pytest.fixture
@@ -79,7 +75,7 @@ def news_list():
     return News.objects.bulk_create(
         News(
             title=f'Заголовок {index}',
-            text='Текст',
+            text=f'Текст {index}',
             date=datetime.today().date() - timedelta(days=index),
         )
         for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
@@ -92,7 +88,7 @@ def comments_list(author, news):
         comment = Comment.objects.create(
             news=news,
             author=author,
-            text='Комментарий',
+            text=COMMENT_TEXT,
         )
         comment.created = now() + timedelta(days=index)
         comment.save()
@@ -101,7 +97,7 @@ def comments_list(author, news):
 
 @pytest.fixture
 def form_data():
-    return {'text': 'Новый комментарий'}
+    return {'text': COMMENT_TEXT_NEW}
 
 
 def comparison_count_comments_in_db(expected_count):

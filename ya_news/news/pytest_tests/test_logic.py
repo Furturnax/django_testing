@@ -1,12 +1,11 @@
 import pytest
-
 from pytest_django.asserts import assertFormError, assertRedirects
 
 from conftest import (
     comparison_count_comments_in_db,
     return_status_404,
     COMMENT_TEXT,
-    NEW_COMMENT_TEXT,
+    COMMENT_TEXT_NEW,
     URL
 )
 from news.forms import BAD_WORDS, WARNING
@@ -22,21 +21,33 @@ def test_anonymous_user_cant_create_comment(client, form_data):
     comparison_count_comments_in_db(expected_count)
 
 
-def test_auth_user_can_create_comment(author, author_client, form_data, news):
+def test_auth_user_can_create_comment(
+        author, author_client, form_data, news
+):
     """Тест на создание комментария авторизированным пользователем."""
     expected_count = Comment.objects.count() + 1
+    comments_before = set(Comment.objects.all())
     assertRedirects(
         author_client.post(URL.detail, data=form_data),
         f'{URL.detail}#comments',
         msg_prefix=('Проверьте, что произошел редирект на страницу '
                     f'"{URL.detail}".'),
     )
-    assert all(
-        (Comment.objects.get().news == news,
-         Comment.objects.get().author == author,
-         Comment.objects.get().text == form_data['text'],)
-    ), ('Проверьте, что написанный комментарий имеет связанную с собой '
-        'новость, указан автор комментария, написан текст комментария.')
+    comments_after = set(Comment.objects.all())
+    assert len(comments_after - comments_before) == 1, (
+        'Проверьте, что разница между количеством коментариев до запроса '
+        'и после запроса составляет "1".'
+    )
+    new_comment = (comments_after - comments_before).pop()
+    assert new_comment.news == news, (
+        'Проверьте, что новость связана с комментарием.'
+    )
+    assert new_comment.author == author, (
+        'Проверьте, что автор комментария совпадает.'
+    )
+    assert new_comment.text == form_data['text'], (
+        'Проверьте, что комментарий совпадает.'
+    )
     comparison_count_comments_in_db(expected_count)
 
 
@@ -59,7 +70,7 @@ def test_user_cant_use_bad_words_in_comments(author_client, word, news):
 
 
 def test_author_can_edit_comment(
-        author, author_client, comment, form_data
+        author, author_client, comment, form_data, news
 ):
     """Тест на редактирование комментария автором."""
     expected_count = Comment.objects.count()
@@ -70,11 +81,15 @@ def test_author_can_edit_comment(
                     f'произошел редирект на страницу "{URL.detail}".'),
     )
     comment.refresh_from_db()
-    assert all(
-        (comment.text == NEW_COMMENT_TEXT,
-         comment.author == author,)
-    ), ('Проверьте, что после редактирования комментария он '
-        'отображается в общем списке комментариев.')
+    assert comment.news == news, (
+        'Проверьте, что новость связана с комментарием.'
+    )
+    assert comment.author == author, (
+        'Проверьте, что автор комментария совпадает.'
+    )
+    assert comment.text == COMMENT_TEXT_NEW, (
+        'Проверьте, что комментарии совпадают.'
+    )
     comparison_count_comments_in_db(expected_count)
 
 
@@ -91,16 +106,20 @@ def test_author_can_delete_comment(author_client, comment):
 
 
 def test_user_cant_edit_comment_of_another_user(
-    admin_client, author, comment, form_data
+    admin_client, author, comment, form_data, news
 ):
     """Тест на редактирование комментария другим пользователем."""
     expected_count = Comment.objects.count()
     comment.refresh_from_db()
-    assert all(
-        (comment.text == COMMENT_TEXT,
-         comment.author == author)
-    ), ('Проверьте, что при попытке редактирования комментария не автором '
-        'комментарий не изменился.')
+    assert comment.news == news, (
+        'Проверьте, что новость связана с комментарием.'
+    )
+    assert comment.author == author, (
+        'Проверьте, что автор комментария совпадает.'
+    )
+    assert comment.text == COMMENT_TEXT, (
+        'Проверьте, что комментарии совпадают.'
+    )
     return_status_404(admin_client.post(URL.edit, data=form_data))
     comparison_count_comments_in_db(expected_count)
 

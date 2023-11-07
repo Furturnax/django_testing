@@ -1,6 +1,6 @@
-import pytest
-
 from datetime import date
+
+import pytest
 from django.conf import settings
 from django.utils.timezone import datetime
 
@@ -46,12 +46,16 @@ def test_comment_order(client, comments_list):
 
 
 def test_anonymous_user_havent_form_for_comments(client, admin_client, news):
-    """Тест сортировки комментариев."""
+    """Тест отправки формы комментария анонимному пользователю."""
     assert 'form' not in client.get(URL.detail).context, (
         'Проверьте, что для анонимного пользователя недоступна форма для '
         'отправки комментариев.'
     )
+    assert 'form' in admin_client.get(URL.detail).context, (
+        'Проверьте, что для авторизованного пользователя доступна форма для '
+        'отправки комментариев.'
+    )
     assert isinstance(
         admin_client.get(URL.detail).context['form'], CommentForm
-    ), ('Проверьте, что для авторизированного пользователя доступна форма для '
-        'отправки комментариев.')
+    ), ('Проверьте, что форма для авторизированного пользователя является '
+        'экземпляром CommentForm.')
