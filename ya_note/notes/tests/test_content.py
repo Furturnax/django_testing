@@ -1,24 +1,45 @@
 from notes.forms import NoteForm
+from notes.models import Note
 from notes.tests.core import CoreTestCase, URL
 
 
 class TestNotesList(CoreTestCase):
     """Тест на создание, редактирование и видимость контента."""
 
-    def test_user_notes_not_visible_to_other_users(self):
-        """Тест видимости своих заметок в своём списке."""
-        clients = (
-            (URL.list, self.author_client, True),
-            (URL.list, self.user_client, False),
+    def test_user_notes_visible_to_author(self):
+        """Тест видимости своих заметок автором в списке заметок."""
+        expected_count = Note.objects.count()
+        object_list = self.author_client.get(URL.list).context['object_list']
+        self.assertEqual(
+            len(object_list),
+            expected_count,
+            msg=('Проверьте, что в списке заметок одна заметка.'),
         )
-        for url, client, arg in clients:
-            with self.subTest(url=url, client=client, arg=arg):
-                object_list = client.get(url).context['object_list']
-                self.assertTrue(
-                    (self.note in object_list) is arg,
-                    msg=(f'Проверьте, что {client} не видит чужие заметки '
-                         'в списке своих заметок.'),
-                )
+        self.assertTrue(
+            self.note in object_list,
+            msg=('Проверьте, что автор видит свои заметки '
+                 'в списке своих заметок.'),
+        )
+        self.assertEqual(
+            self.note.title,
+            'Заголовок',
+            msg=('Проверьте, что заголовок совпадает с заголовком в БД.'),
+        )
+        self.assertEqual(
+            self.note.text,
+            'Текст заметки',
+            msg=('Проверьте, что текст совпадает с текстом в БД.'),
+        )
+
+    def test_user_notes_not_visible_to_not_author(self):
+        """Тест видимости чужих заметок не автором в списке заметок."""
+        expected_count = Note.objects.count() - 1
+        object_list = self.user_client.get(URL.list).context['object_list']
+        self.assertEqual(
+            len(object_list),
+            expected_count,
+            msg=('Проверьте, что в списке заметок нет заметок'),
+        )
 
     def test_get_forms_on_add_or_edit_pages_from_author(self):
         """Тест передачи формы для создания и редактирования заметок."""
@@ -28,10 +49,17 @@ class TestNotesList(CoreTestCase):
         )
         for url in urls:
             with self.subTest(url=url, client=self.author_client):
+                form = self.author_client.get(url).context['form']
+                self.assertIsNotNone(
+                    form,
+                    msg=('Проверьте, что форма заметки передаётся'
+                         f'на страницу "{url}".')
+
+                )
                 self.assertIsInstance(
-                    self.author_client.get(url).context['form'],
+                    form,
                     NoteForm,
                     msg=('Проверьте, что форма для создания или '
-                         'редактирования заметки передается '
-                         f'на страницу "{url}"'),
+                         'редактирования заметки является '
+                         'экземпляром класса "NoteForm".'),
                 )

@@ -28,8 +28,8 @@ class TestAddNote(CoreCheckData):
                         f'редирект на страницу "{URL.success}".')
         )
         note = Note.objects.first()
-        super().comparison_count_notes_in_db(expected_count)
         super().check_data_from_form_and_db(note, self.field_data)
+        super().comparison_count_notes_in_db(expected_count)
 
     def test_anonymous_user_cant_create_note(self):
         """Тест создания заметки не авторизированным пользователем."""
@@ -70,7 +70,16 @@ class TestAddNote(CoreCheckData):
                         'авторизированным пользователем произошёл '
                         f'редирект на страницу "{URL.success}".')
         )
-        note = Note.objects.get()
+        self.assertEqual(
+            Note.objects.count(),
+            expected_count,
+            msg=('Проверьте, что количество записей в БД равно 1.')
+        )
+        note = Note.objects.first()
+        self.assertIsNotNone(
+            note,
+            msg=('Проверьте, что новая заметка была создана.')
+        )
         expected_slug = slugify(self.form_data['title'])
         self.assertEqual(
             note.slug,
@@ -91,6 +100,7 @@ class TestEditDeleteNote(CoreTestCase, CoreCheckData):
 
     def test_author_can_edit_note(self):
         """Тест на редактирование заметки автором."""
+        expected_count = Note.objects.count()
         self.assertRedirects(
             self.author_client.post(URL.edit, data=self.new_form_data),
             URL.success,
@@ -99,9 +109,11 @@ class TestEditDeleteNote(CoreTestCase, CoreCheckData):
         )
         note = Note.objects.first()
         super().check_data_from_form_and_db(note, self.new_field_data)
+        super().comparison_count_notes_in_db(expected_count)
 
     def test_other_user_cant_edit_note(self):
         """Тест на редактирование заметки не автором."""
+        expected_count = Note.objects.count()
         self.assertEqual(
             self.user_client.post(URL.edit,
                                   data=self.new_form_data).status_code,
@@ -111,6 +123,7 @@ class TestEditDeleteNote(CoreTestCase, CoreCheckData):
         )
         note = Note.objects.first()
         super().check_data_from_form_and_db(note, self.field_data)
+        super().comparison_count_notes_in_db(expected_count)
 
     def test_author_can_delete_note(self):
         """Тест на удаление заметки автором."""
