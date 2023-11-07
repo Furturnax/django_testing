@@ -6,7 +6,6 @@ from conftest import (
     return_status_404,
     COMMENT_TEXT,
     COMMENT_TEXT_NEW,
-    URL
 )
 from news.forms import BAD_WORDS, WARNING
 from news.models import Comment
@@ -14,24 +13,24 @@ from news.models import Comment
 pytestmark = pytest.mark.django_db
 
 
-def test_anonymous_user_cant_create_comment(client, form_data):
+def test_anonymous_user_cant_create_comment(client, form_data, urls):
     """Тест на создание комментария анонимным пользователем."""
     expected_count = Comment.objects.count()
-    client.post(URL.detail, data=form_data)
+    client.post(urls.detail, data=form_data)
     comparison_count_comments_in_db(expected_count)
 
 
 def test_auth_user_can_create_comment(
-        author, author_client, form_data, news
+        author, author_client, form_data, news, urls
 ):
     """Тест на создание комментария авторизированным пользователем."""
     expected_count = Comment.objects.count() + 1
     comments_before = set(Comment.objects.all())
     assertRedirects(
-        author_client.post(URL.detail, data=form_data),
-        f'{URL.detail}#comments',
+        author_client.post(urls.detail, data=form_data),
+        f'{urls.detail}#comments',
         msg_prefix=('Проверьте, что произошел редирект на страницу '
-                    f'"{URL.detail}".'),
+                    f'"{urls.detail}".'),
     )
     comments_after = set(Comment.objects.all())
     assert len(comments_after - comments_before) == 1, (
@@ -55,12 +54,12 @@ def test_auth_user_can_create_comment(
     'word',
     (BAD_WORDS),
 )
-def test_user_cant_use_bad_words_in_comments(author_client, word, news):
+def test_user_cant_use_bad_words_in_comments(author_client, word, news, urls):
     """Тест на запрет написания плохих слов в комментариях."""
     expected_count = Comment.objects.count()
     bad_words_data = {'text': f'Какой-то текст, {word}, еще текст'}
     assertFormError(
-        author_client.post(URL.detail, data=bad_words_data),
+        author_client.post(urls.detail, data=bad_words_data),
         form='form',
         field='text',
         errors=WARNING
@@ -70,15 +69,15 @@ def test_user_cant_use_bad_words_in_comments(author_client, word, news):
 
 
 def test_author_can_edit_comment(
-        author, author_client, comment, form_data, news
+        author, author_client, comment, form_data, news, urls
 ):
     """Тест на редактирование комментария автором."""
     expected_count = Comment.objects.count()
     assertRedirects(
-        author_client.post(URL.edit, data=form_data),
-        f'{URL.detail}#comments',
+        author_client.post(urls.edit, data=form_data),
+        f'{urls.detail}#comments',
         msg_prefix=('Проверьте, что после редактирования комментария '
-                    f'произошел редирект на страницу "{URL.detail}".'),
+                    f'произошел редирект на страницу "{urls.detail}".'),
     )
     comment.refresh_from_db()
     assert comment.news == news, (
@@ -93,20 +92,20 @@ def test_author_can_edit_comment(
     comparison_count_comments_in_db(expected_count)
 
 
-def test_author_can_delete_comment(author_client, comment):
+def test_author_can_delete_comment(author_client, comment, urls):
     """Тест на удаление комментария автором."""
     expected_count = Comment.objects.count() - 1
     assertRedirects(
-        author_client.delete(URL.delete),
-        f'{URL.detail}#comments',
+        author_client.delete(urls.delete),
+        f'{urls.detail}#comments',
         msg_prefix=('Проверьте, что после удаления комментария '
-                    f'произошел редирект на страницу "{URL.detail}".'),
+                    f'произошел редирект на страницу "{urls.detail}".'),
     )
     comparison_count_comments_in_db(expected_count)
 
 
 def test_user_cant_edit_comment_of_another_user(
-    admin_client, author, comment, form_data, news
+    admin_client, author, comment, form_data, news, urls
 ):
     """Тест на редактирование комментария другим пользователем."""
     expected_count = Comment.objects.count()
@@ -120,12 +119,12 @@ def test_user_cant_edit_comment_of_another_user(
     assert comment.text == COMMENT_TEXT, (
         'Проверьте, что комментарии совпадают.'
     )
-    return_status_404(admin_client.post(URL.edit, data=form_data))
+    return_status_404(admin_client.post(urls.edit, data=form_data))
     comparison_count_comments_in_db(expected_count)
 
 
-def test_user_cant_delete_comment_of_another_user(admin_client):
+def test_user_cant_delete_comment_of_another_user(admin_client, urls):
     """Тест на удаление комментария другим пользователем."""
     expected_count = Comment.objects.count()
-    return_status_404(admin_client.delete(URL.delete))
+    return_status_404(admin_client.delete(urls.delete))
     comparison_count_comments_in_db(expected_count)
