@@ -35,17 +35,17 @@ class TestRoutes(CoreTestCase):
     def test_redirect_for_anonymous_client(self):
         """Тест редиректа у анонимного пользователя."""
         urls = (
-            (URL.list, self.client),
-            (URL.success, self.client),
-            (URL.add, self.client),
-            (URL.detail, self.client),
-            (URL.edit, self.client),
-            (URL.delete, self.client),
+            (URL.list),
+            (URL.success),
+            (URL.add),
+            (URL.detail),
+            (URL.edit),
+            (URL.delete),
         )
-        for url, client in urls:
-            with self.subTest(url=url, client=client):
+        for url in urls:
+            with self.subTest(url=url, client=self.client):
                 self.assertRedirects(
-                    client.get(url),
+                    self.client.get(url),
                     f'{URL.login}?next={url}',
                     msg_prefix=('Проверьте, что неавторизованный пользователь '
                                 f'не имеет доступа к странице "{url}".'),

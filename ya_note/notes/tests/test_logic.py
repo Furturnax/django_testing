@@ -8,7 +8,6 @@ from notes.tests.core import (
     CoreCheckData,
     CoreTestCase,
     FIELD_FORM,
-    FORM_DATA,
     NEW_FORM_DATA,
     SLUG,
     URL
@@ -28,8 +27,9 @@ class TestAddNote(CoreCheckData):
                         'авторизированным пользователем произошёл '
                         f'редирект на страницу "{URL.success}".')
         )
+        note = Note.objects.first()
         super().comparison_count_notes_in_db(expected_count)
-        super().check_data_from_form_and_db(self.field_data)
+        super().check_data_from_form_and_db(note, self.field_data)
 
     def test_anonymous_user_cant_create_note(self):
         """Тест создания заметки не авторизированным пользователем."""
@@ -62,7 +62,7 @@ class TestAddNote(CoreCheckData):
     def test_empty_slug(self):
         """Тест на автоматическое создание slug."""
         expected_count = Note.objects.count() + 1
-        del self.form_data['slug']
+        self.form_data.pop('slug')
         self.assertRedirects(
             self.author_client.post(URL.add, data=self.form_data),
             URL.success,
@@ -97,7 +97,8 @@ class TestEditDeleteNote(CoreTestCase, CoreCheckData):
             msg_prefix=('Проверьте, что после редактирования заметки '
                         f'произошёл редирект на страницу "{URL.success}".')
         )
-        super().check_data_from_form_and_db((*NEW_FORM_DATA, self.author))
+        note = Note.objects.first()
+        super().check_data_from_form_and_db(note, self.new_field_data)
 
     def test_other_user_cant_edit_note(self):
         """Тест на редактирование заметки не автором."""
@@ -108,7 +109,8 @@ class TestEditDeleteNote(CoreTestCase, CoreCheckData):
             msg=('Проверьте, что при редактировании не своей заметки '
                  'произошёл редирект на страницу с ошибкой 404.')
         )
-        super().check_data_from_form_and_db((*FORM_DATA, self.author))
+        note = Note.objects.first()
+        super().check_data_from_form_and_db(note, self.field_data)
 
     def test_author_can_delete_note(self):
         """Тест на удаление заметки автором."""

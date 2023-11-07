@@ -56,6 +56,8 @@ class CoreTestCase(TestCase):
         cls.note = Note.objects.create(
             **dict(zip(FIELD_FORM, (*FORM_DATA, cls.author)))
         )
+        cls.field_data = (*FORM_DATA, cls.author)
+        cls.new_field_data = (*NEW_FORM_DATA, cls.author)
 
 
 class CoreCheckData(TestCase):
@@ -69,9 +71,8 @@ class CoreCheckData(TestCase):
         cls.form_data = dict(zip(FIELD_FORM, FORM_DATA))
         cls.field_data = (*FORM_DATA, cls.author)
 
-    def check_data_from_form_and_db(self, field_data):
+    def check_data_from_form_and_db(self, note, field_data):
         """Сравнение данных отправленных в форме с данными в БД."""
-        note = Note.objects.get()
         data_from_db = (note.title, note.text, note.slug, note.author)
         for sent_value, db_value in zip(field_data, data_from_db):
             with self.subTest(sent_value=sent_value, db_value=db_value):

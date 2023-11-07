@@ -23,13 +23,13 @@ class TestNotesList(CoreTestCase):
     def test_get_forms_on_add_or_edit_pages_from_author(self):
         """Тест передачи формы для создания и редактирования заметок."""
         urls = (
-            (URL.add, self.author_client),
-            (URL.edit, self.author_client),
+            (URL.add),
+            (URL.edit),
         )
-        for url, client in urls:
-            with self.subTest(url=url, client=client):
+        for url in urls:
+            with self.subTest(url=url, client=self.author_client):
                 self.assertIsInstance(
-                    client.get(url).context['form'],
+                    self.author_client.get(url).context['form'],
                     NoteForm,
                     msg=('Проверьте, что форма для создания или '
                          'редактирования заметки передается '
