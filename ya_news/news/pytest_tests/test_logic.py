@@ -33,11 +33,11 @@ def test_auth_user_can_create_comment(
                     f'"{urls.detail}".'),
     )
     comments_after = set(Comment.objects.all())
-    assert len(comments_after - comments_before) == 1, (
+    new_comment = (comments_after - comments_before).pop()
+    assert comments_after.difference(comments_before) == {new_comment}, (
         'Проверьте, что разница между количеством коментариев до запроса '
         'и после запроса составляет "1".'
     )
-    new_comment = (comments_after - comments_before).pop()
     assert new_comment.news == news, (
         'Проверьте, что новость связана с комментарием.'
     )

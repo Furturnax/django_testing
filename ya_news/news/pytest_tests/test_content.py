@@ -44,18 +44,23 @@ def test_comment_order(client, comments_list, urls):
         'от старого к новому.')
 
 
+@pytest.mark.parametrize('client_type', ('anonymous', 'admin'))
 def test_anonymous_user_havent_form_for_comments(
-        client, admin_client, news, urls
+        client, admin_client, news, urls, client_type
 ):
     """Тест отправки формы комментария анонимному пользователю."""
-    assert 'form' not in client.get(urls.detail).context, (
-        'Проверьте, что для анонимного пользователя недоступна форма для '
-        'отправки комментариев.'
-    )
-    assert 'form' in admin_client.get(urls.detail).context, (
-        'Проверьте, что для авторизованного пользователя доступна форма для '
-        'отправки комментариев.'
-    )
+    if client_type == 'anonymous':
+        response = client.get(urls.detail)
+        expected_message = (
+            'Проверьте, что для анонимного пользователя недоступна '
+            'форма для отправки комментариев.')
+    elif client_type == 'admin':
+        response = admin_client.get(urls.detail)
+        expected_message = (
+            'Проверьте, что для авторизованного пользователя доступна '
+            'форма для отправки комментариев.')
+    assert ('form' in response.context) == (client_type == 'admin'), (
+        expected_message)
     assert isinstance(
         admin_client.get(urls.detail).context['form'], CommentForm
     ), ('Проверьте, что форма для авторизированного пользователя является '

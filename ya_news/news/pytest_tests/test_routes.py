@@ -18,7 +18,10 @@ def test_pages_availability_for_all(urls, client, pages_for_anonymous):
 def test_pages_availability_for_author_and_user(
         admin_client, author_client, comment, pages_for_author, urls
 ):
-    """Тест доступа к страницам редактирования и удаления чужих коментариев."""
+    """
+    Тест доступа к страницам редактирования и удаления чужих коментариев
+    у автора и у других пользователей.
+    """
     for url in pages_for_author:
         assert author_client.get(url).status_code == HTTPStatus.OK, (
             f'Проверьте, что код ответа {HTTPStatus.OK} страницы '

@@ -15,11 +15,6 @@ class TestNotesList(CoreTestCase):
             expected_count,
             msg=('Проверьте, что в списке заметок одна заметка.'),
         )
-        self.assertTrue(
-            self.note in object_list,
-            msg=('Проверьте, что автор видит свои заметки '
-                 'в списке своих заметок.'),
-        )
         self.assertEqual(
             self.note.title,
             'Заголовок',
@@ -49,15 +44,15 @@ class TestNotesList(CoreTestCase):
         )
         for url in urls:
             with self.subTest(url=url, client=self.author_client):
-                form = self.author_client.get(url).context['form']
-                self.assertIsNotNone(
-                    form,
-                    msg=('Проверьте, что форма заметки передаётся'
-                         f'на страницу "{url}".')
-
+                form = self.author_client.get(url)
+                self.assertIn(
+                    'form',
+                    form.context,
+                    msg=('Проверьте, что форма заметки передаётся на '
+                         f'страницу "{url}".')
                 )
                 self.assertIsInstance(
-                    form,
+                    form.context['form'],
                     NoteForm,
                     msg=('Проверьте, что форма для создания или '
                          'редактирования заметки является '

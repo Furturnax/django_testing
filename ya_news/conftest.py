@@ -39,7 +39,7 @@ def news():
 
 
 @pytest.fixture
-def pk_for_args(news):
+def pk_for_news(news):
     return news.pk
 
 
@@ -50,6 +50,11 @@ def comment(author, news):
         author=author,
         text=COMMENT_TEXT,
     )
+
+
+@pytest.fixture
+def pk_for_comment(comment):
+    return comment.pk
 
 
 @pytest.fixture
@@ -101,19 +106,19 @@ def url_for_anonymous():
 
 
 @pytest.fixture
-def url_for_user(pk_for_args):
+def url_for_user(pk_for_news):
     return namedtuple(
         'Name',
         (
             'detail',
         )
     )(
-        reverse('news:detail', args=(pk_for_args,)),
+        reverse('news:detail', args=(pk_for_news,)),
     )
 
 
 @pytest.fixture
-def url_for_author(pk_for_args):
+def url_for_author(pk_for_comment):
     return namedtuple(
         'Name',
         (
@@ -121,8 +126,8 @@ def url_for_author(pk_for_args):
             'delete',
         )
     )(
-        reverse('news:edit', args=(pk_for_args,)),
-        reverse('news:delete', args=(pk_for_args,)),
+        reverse('news:edit', args=(pk_for_comment,)),
+        reverse('news:delete', args=(pk_for_comment,)),
     )
 
 
