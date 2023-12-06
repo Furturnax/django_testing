@@ -1,52 +1,31 @@
-# Django testing  
-## Если вы успели выполнить все домашние задания — ваш финальный проект готов.
-Перенесите тесты из ваших проектов в данный репозиторий (**django_testing**), который появился в вашем аккаунте.  
-В итоге должна получиться следующая структура репозитория:
-```
-Dev
- └── django_testing
-     ├── ya_news
-     │   ├── news
-     │   │   ├── fixtures/
-     │   │   ├── migrations/
-     │   │   ├── pytest_tests/   <- Директория с вашими тестами pytest для проекта ya_news
-     │   │   ├── __init__.py
-     │   │   ├── admin.py
-     │   │   ├── apps.py
-     │   │   ├── forms.py
-     │   │   ├── models.py
-     │   │   ├── urls.py
-     │   │   └── views.py
-     │   ├── templates/
-     │   ├── yanews/
-     │   ├── manage.py
-     │   └── pytest.ini
-     ├── ya_note
-     │   ├── notes
-     │   │   ├── migrations/
-     │   │   ├── tests/          <- Директория с вашими тестами unittest для проекта ya_note
-     │   │   ├── __init__.py
-     │   │   ├── admin.py
-     │   │   ├── apps.py
-     │   │   ├── forms.py
-     │   │   ├── models.py
-     │   │   ├── urls.py
-     │   │   └── views.py
-     │   ├── templates/
-     │   ├── yanote/
-     │   ├── manage.py
-     │   └── pytest.ini
-     ├── .gitignore
-     ├── README.md
-     ├── requirements.txt
-     └── structure_test.py
-```
+# Проект "Vice Versa"
+Реализация тестирования проектов YaNote и YaNews на unittest и pytest   соответственно.
 
-## После копирования тестов, написанных в ходе прохождения спринта, для проверки готовности проекта к сдаче необходимо выполнить 4 действия:
-1. Создать и активировать виртуальное окружение; установить зависимости из файла `requirements.txt`;
-2. Запустить скрипт для `run_tests.sh` из корневой директории проекта:
-```sh
-bash run_tests.sh
-```
+Проект является учебным. Основная польза в приобретении понимания реализации unittest и pytest тестов в проектах, а именно:
+- написание общего ядра для unittest, с использованием `namedtuple` для упокавки путей и использования их во всех тестах;
+- создание сложных фикстур для pytest, с использованием `namedtuple` для упаковки разных категорий путей, для разных тестов;
+- написания для кажого аспекта проекта отдельного информативно наполненного теста;
+- сложная реализация через `namedtuple` позваляет куда лучше понять работу кортежей в `Python`.
 
-**Если все проверки успешно выполнились, проект можно отправлять на ревью.**
+<br>
+
+## Технологический стек:
+- Python 3.11.5
+- Django 3.2.15
+- SQLite
+- Unittest
+- Pytest
+
+<br>
+
+## Запуск проекта :shipit: :
+[SetUp.md](./SetUp.md)
+
+<br>
+
+## Авторство
+Автор проекта - Yandex Practicum | [GitHub](https://github.com/yandex-praktikum)
+
+Разработчик - Andrew Fedorchenko | [GitHub](https://github.com/Furturnax)
+
+Ревьюер - Evgeniy Salahutdinov | [GitHub](https://github.com/EugeneSal)
